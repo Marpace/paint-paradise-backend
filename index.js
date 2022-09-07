@@ -41,19 +41,48 @@ mongoose
     //     },
     // ]);
 
+    // for(let i = 1; i <= 49; i++){
+    //     Image.create({
+    //         location: {
+    //             page: "gallery",
+    //             section: "grid"
+    //         },
+    //         type: {
+    //             name: "image"
+    //         },
+    //         order: i,
+    //         path: `./images/gallery/gallery_image (${i})`
+    //     })
+    // }
 
     //   Image.insertMany([
     //     {
     //       location: {
     //         page: "about",
-    //         section: "header"
+    //         section: "instagram"
     //       },
     //       type: {
     //         name: "image"
     //       },
-    //       path: "/images/services/about/about_1.jpg"
+    //       order: 1,
+    //       path: "./images/about/insta-1.jpg"
     //     },
     //   ])
+
+        // Image.find({"location.page": "gallery"})
+        // .then(docs => {
+        //     // docs.forEach( doc => {
+        //     //     doc.path = doc.path + ".jpg"
+        //     //     doc.save()
+        //     // })
+        //     console.log(docs)
+                
+            
+        // })
+        // .catch( err => console.log(err))
+    
+
+
         app.listen(port, function(err){
             if(err) console.log(err);
             else console.log("Server started on port: " + port)

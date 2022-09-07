@@ -28,4 +28,6 @@ router.get("/get-paint-kits-image-content", imageControllers.getImageContent)
 
 router.get("/get-about-image-content", imageControllers.getImageContent)
 
+router.get("/get-gallery-image-content", imageControllers.getImageContent)
+
 module.exports = router;
