@@ -29,6 +29,10 @@ const imageSchema = new schema({
   path: {
     type: String,
     required: true
+  },
+  googleId: {
+    type: String,
+    required: true
   }
 })
 

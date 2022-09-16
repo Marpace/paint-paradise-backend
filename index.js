@@ -58,29 +58,34 @@ mongoose
     //   Image.insertMany([
     //     {
     //       location: {
-    //         page: "about",
-    //         section: "instagram"
+    //         page: "home",
+    //         section: "services"
     //       },
     //       type: {
     //         name: "image"
     //       },
     //       order: 1,
-    //       path: "./images/about/insta-1.jpg"
+    //       path: "https://drive.google.com/uc?id=1XMM0UoIBYsNmjaSuqCMqTVf94pPhnA_d"
     //     },
     //   ])
 
         // Image.find({"location.page": "gallery"})
         // .then(docs => {
-        //     // docs.forEach( doc => {
-        //     //     doc.path = doc.path + ".jpg"
-        //     //     doc.save()
-        //     // })
-        //     console.log(docs)
-                
-            
+        //     let index = 1;
+        //     docs.forEach( doc => {
+        //         doc.order = index;
+        //         doc.save();
+        //         index++;
+        //         console.log(doc.order)
+        //     })
         // })
         // .catch( err => console.log(err))
-    
+
+  
+        // Image.deleteMany({"location.section": "get-paint-kit"})
+        // .then(result => console.log(result))
+        // .catch(err => console.log(err))
+
 
 
         app.listen(port, function(err){

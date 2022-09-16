@@ -15,6 +15,13 @@ router.post("/upload-paint-night-image", upload.single("image"), imageController
 
 router.post("/upload-paint-kits-image", upload.single("image"), imageControllers.uploadImage)
 
+router.post("/upload-gallery-image", upload.single("image"), imageControllers.uploadImage)
+
+router.post("/upload-gallery-images", upload.array("image"), imageControllers.uploadGalleryImages)
+
+router.delete("/delete-gallery-images", imageControllers.deleteGalleryImages)
+
+
 
 router.get("/get-home-image-content", imageControllers.getImageContent)
 
