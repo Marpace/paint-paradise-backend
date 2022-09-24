@@ -2,6 +2,7 @@ const Text = require("../models/text");
 
 
 exports.getGlobalTextContent = (req, res) => {
+
   Text.find({"location.page": {$eq: "global"}})
   .then( docs => {
     res.status(200).json({content: docs})

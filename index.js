@@ -7,9 +7,12 @@ const port = 8080 || process.env.port
 
 const Text = require("./models/text");
 const Image = require("./models/image");
+const User = require("./models/user");
+const bcrypt = require("bcrypt");
 
 const textRoutes = require("./routes/text")
 const imageRoutes = require("./routes/image")
+const authRoutes = require("./routes/auth")
 
 
 
@@ -26,6 +29,7 @@ mongoose
 
       app.use(textRoutes);
       app.use(imageRoutes);
+      app.use(authRoutes);
 
     // Text.insertMany([
     //     {
@@ -41,17 +45,17 @@ mongoose
     //     },
     // ]);
 
-    // for(let i = 1; i <= 49; i++){
+    // for(let i = 1; i <= 3; i++){
     //     Image.create({
     //         location: {
-    //             page: "gallery",
-    //             section: "grid"
+    //             page: "home",
+    //             section: "content"
     //         },
     //         type: {
     //             name: "image"
     //         },
     //         order: i,
-    //         path: `./images/gallery/gallery_image (${i})`
+    //         path: ""
     //     })
     // }
 
@@ -59,7 +63,7 @@ mongoose
     //     {
     //       location: {
     //         page: "home",
-    //         section: "services"
+    //         section: "content"
     //       },
     //       type: {
     //         name: "image"
@@ -86,6 +90,23 @@ mongoose
         // .then(result => console.log(result))
         // .catch(err => console.log(err))
 
+        // function createUser(username, password, role) {
+        //     bcrypt.hash(password, 12)
+        //     .then(hashedPw => {
+        //         return User.create({
+        //             userName: userName,
+        //             password: hashedPw,
+        //             role: role
+        //         })
+        //     })
+        //     .then(() => {
+        //         console.log("user created")
+        //     })
+        //     .catch(err => {
+        //         console.log(err)
+        //     });
+        // }
+        // createUser();
 
 
         app.listen(port, function(err){

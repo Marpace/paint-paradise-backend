@@ -43,11 +43,15 @@ const deleteFile = async (fileId) => {
   const result = await google.drive({ version: 'v3', auth }).files.delete({
       fileId: fileId
   })
+  console.log("deleted file from google drive")
   return result;
 };
 
+//fetch images based on the req.url 
 exports.getImageContent = (req, res) => {
+  // isolate the page from req.url string to know which images to fetch
   const page = req.url.substring(req.url.indexOf("-") + 1, req.url.indexOf("-image-content") );
+
   Image.find({"location.page": {$eq: page}})
   .then( docs => {
     res.status(200).json({content: docs})
@@ -57,43 +61,33 @@ exports.getImageContent = (req, res) => {
   })
 };
 
-
-exports.uploadImage = (req, res) => {
+//uploads new image and deletes old image from google drive, also updates mongoDB doc
+exports.uploadImage = async (req, res) => {
   const image = req.file
   const contentId = req.body.contentId
 
-  console.log(image)
-
-  Image.findById(contentId)
-  .then( doc => {
-    console.log(doc.googleId)
-    return deleteFile(doc.googleId)
-  })
-  .then(() => {
-    console.log("deleted file form google drive")
-    return uploadFile(image)
-  })
-  .then( newId => {
-    console.log("uploaded file to google drive")
-    return Image.findByIdAndUpdate(contentId, {
+  try {
+    const newId = await uploadFile(image)
+    const doc = await Image.findByIdAndUpdate(contentId, {
       "$set": {"path": `https://drive.google.com/uc?id=${newId}`, "googleId": newId}
     })
-  })
-  .then( doc => {
-    console.log(doc)
-    console.log("updated image")
+    console.log(`Uploaded the following document: ${doc}`)
+    await deleteFile(doc.googleId)
     res.status(200).json()
-  })
-  .catch( err => console.log(err))
+  } 
+  catch (error) {
+    console.log(err)
+  }
 }
 
+//Uploads one or more images to google drive and creates document in mongoDB for each image
 exports.uploadGalleryImages = async (req, res) => {
   const images = req.files;
-  let order;
+  index = 1;
 
   try {
-    docs = await Image.find({"location.page": "gallery"});
-    let order = docs.length + 1
+    docsCount = await Image.countDocuments({"location.page": "gallery"});
+    let order = docsCount + 1
     console.log(order)
     images.forEach( async (image) => {
       const id = await uploadFile(image)
@@ -109,6 +103,11 @@ exports.uploadGalleryImages = async (req, res) => {
         path: `https://drive.google.com/uc?id=${id}`, 
         googleId: id
       })
+      console.log(
+        `Added the following image to the gallery:
+        order: ${order}
+        googleId: ${id}`
+      )
       order++;
     })
     res.status(200).json();
@@ -116,58 +115,54 @@ exports.uploadGalleryImages = async (req, res) => {
     console.log(err)
   }
 
-
-
-
-
-  // Image.find({})
-  // .then(docs => {
-
-  // })
-
-  // images.forEach( image => {
-  //   uploadFile(image)
-  //   .then( id => {
-  //     return Image.create({
+  // use for uploading many images to google drive and database(customize model.create() method)
+  // images.forEach(async (image) => {
+  //   try {
+  //     const id = await uploadFile(image)
+  //     await Image.create({
   //       location: {
-  //         page: "gallery",
-  //         section: "grid"
+  //         page: "home",
+  //         section: "content"
   //       },
   //       type: {
-  //         name: "image",
+  //         name: "image"
   //       },
-  //       order: ,
-  //       path: `https://drive.google.com/uc?id=${id}`, 
+  //       order: index,
+  //       path: `https://drive.google.com/uc?id=${id}`,
   //       googleId: id
   //     })
-  //   })
-  //   .then(() => {
-  //     res.status(200).json();
-  //   })
-  //   .catch(err => console.log(err))
+  //     index++
+  //   } 
+  //   catch(err) {
+  //     console.log(err)
+  //   }
   // })
+
 }
 
+//deletes one or more selected images from google drive and deletes corresponding document from database
 exports.deleteGalleryImages = (req, res) => {
   const imageIds = req.body.imageIds
-  console.log(imageIds) 
 
-  imageIds.forEach(id => {
-    deleteFile(id)
-    .then(() => {
-      return Image.findOneAndDelete({googleId: id})
-    })
-    .then((doc) => {
-      console.log(doc)
-      return Image.find({"location.page": "gallery", order: {$gt: doc.order}})
-    })
-    .then(docs => {
+  imageIds.forEach( async (id) => {
+    try {
+      await deleteFile(id);
+      const doc = await Image.findOneAndDelete({googleId: id})
+      console.log(
+        `Deleted the following gallery image:
+        order: ${doc.order}
+        id: ${doc._id}
+        googleId: ${doc.googleId}`
+      )
+      const docs = await Image.find({"location.page": "gallery", order: {$gt: doc.order}})
       docs.forEach( doc => {
-        doc.order = doc.order - 1;
+        doc.order += 1;
         doc.save();
       })
       res.status(200).json();
-    })
-    .catch( err => console.log(err))
+    }
+    catch (err) {
+      console.log(err)
+    }
   })
 }
