@@ -6,7 +6,7 @@ const {google} = require("googleapis")
 
 //upload image to google drive
 const uploadFile = async (fileObject) => {
-  const KEYFILEPATH = './ServiceAccountCred.json';
+  const KEYFILEPATH = '/etc/secrets/ServiceAccountCred.json';
   const SCOPES = ['https://www.googleapis.com/auth/drive'];
   const auth = new google.auth.GoogleAuth({
     keyFile: KEYFILEPATH,
@@ -33,7 +33,7 @@ const uploadFile = async (fileObject) => {
 
 // delete image from google drive
 const deleteFile = async (fileId) => {
-  const KEYFILEPATH = './ServiceAccountCred.json';
+  const KEYFILEPATH = '/etc/secrets/ServiceAccountCred.json';
   const SCOPES = ['https://www.googleapis.com/auth/drive'];
   const auth = new google.auth.GoogleAuth({
   keyFile: KEYFILEPATH,
