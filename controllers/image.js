@@ -1,21 +1,29 @@
 const Image = require("../models/image");
 const fs = require("fs");
 const stream = require("stream");
-const {google} = require("googleapis")
+const {google, drive_v3} = require("googleapis")
+require("dotenv").config()
 
+const oauth2Client = new google.auth.OAuth2(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  process.env.REDIRECT_URI
+)
+
+oauth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
+
+const drive = new google.drive({
+  version: "v3",
+  auth: oauth2Client
+})
 
 //upload image to google drive
 const uploadFile = async (fileObject) => {
-  const KEYFILEPATH = '/etc/secrets/ServiceAccountCred.json';
-  const SCOPES = ['https://www.googleapis.com/auth/drive'];
-  const auth = new google.auth.GoogleAuth({
-    keyFile: KEYFILEPATH,
-    scopes: SCOPES
-  });
+
   const bufferStream = new stream.PassThrough();
   bufferStream.end(fileObject.buffer);
 
-  const { data } = await google.drive({ version: 'v3', auth }).files.create({
+  const { data } = await drive.files.create({
     media: {
       mimeType: fileObject.mimetype,
       body: bufferStream,
@@ -33,22 +41,16 @@ const uploadFile = async (fileObject) => {
 
 // delete image from google drive
 const deleteFile = async (fileId) => {
-  const KEYFILEPATH = '/etc/secrets/ServiceAccountCred.json';
-  const SCOPES = ['https://www.googleapis.com/auth/drive'];
-  const auth = new google.auth.GoogleAuth({
-  keyFile: KEYFILEPATH,
-  scopes: SCOPES
-  });
-
-  const result = await google.drive({ version: 'v3', auth }).files.delete({
+  const result = await drive.files.delete({
       fileId: fileId
   })
-  console.log("deleted file from google drive")
+  console.log("deleted old image from google drive")
   return result;
 };
 
 //fetch images based on the req.url 
 exports.getImageContent = (req, res) => {
+  
   // isolate the page from req.url string to know which images to fetch
   const page = req.url.substring(req.url.indexOf("-") + 1, req.url.indexOf("-image-content") );
 
@@ -75,7 +77,7 @@ exports.uploadImage = async (req, res) => {
     await deleteFile(doc.googleId)
     res.status(200).json()
   } 
-  catch (error) {
+  catch (err) {
     console.log(err)
   }
 }
@@ -115,7 +117,7 @@ exports.uploadGalleryImages = async (req, res) => {
     console.log(err)
   }
 
-  // use for uploading many images to google drive and database(customize model.create() method)
+  // use for uploading many images to google drive and database(customize Image.create() method)
   // images.forEach(async (image) => {
   //   try {
   //     const id = await uploadFile(image)
@@ -166,3 +168,4 @@ exports.deleteGalleryImages = (req, res) => {
     }
   })
 }
+
