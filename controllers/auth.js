@@ -10,6 +10,7 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.REDIRECT_URI
 )
 
+
 oauth2Client.setCredentials({refresh_token: process.env.REFRESH_TOKEN})
 
 let verificationCode;
@@ -17,8 +18,6 @@ let verificationCode;
 exports.login = async (req, res, next) => {
   const userName = req.body.username
   const password = req.body.password
-
-  console.log(userName)
 
   try {
     const user = await User.findOne({userName: userName})
@@ -69,10 +68,13 @@ exports.sendVerificationCode = (req, res) => {
         user: process.env.NODEMAILER_USER,
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
-        refreshToken: process.env.REFRESH_TOKEN,
+        refreshToken: process.env.GMAIL_REFRESH_TOKEN,
         accessToken: accessToken
       }
     });
+
+    
+  
   
     let mailOptions = {
         from: '"Myself" <almonacid6215@gmail.com>',

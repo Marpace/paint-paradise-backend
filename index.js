@@ -62,31 +62,31 @@ mongoose
     //   Image.insertMany([
     //     {
     //       location: {
-    //         page: "home",
-    //         section: "content"
+    //         page: "global",
+    //         section: "navbar"
     //       },
     //       type: {
     //         name: "image"
     //       },
-    //       order: 1,
-    //       path: "https://drive.google.com/uc?id=1XMM0UoIBYsNmjaSuqCMqTVf94pPhnA_d"
+    //       path: "https://drive.google.com/uc?id=1CCfJBLH-72bTsB6MVV10vZxy1Vg7rFOR",
+    //       googleId: "1CCfJBLH-72bTsB6MVV10vZxy1Vg7rFOR"
     //     },
     //   ])
 
-        // Image.find({"location.page": "gallery"})
+        // Image.find({"location.section": "adult-parties"})
         // .then(docs => {
-        //     let index = 1;
+        //     // let index = 1;
         //     docs.forEach( doc => {
-        //         doc.order = index;
+        //         doc.location.section = "Adult parties";
         //         doc.save();
-        //         index++;
-        //         console.log(doc.order)
+        //         // index++;
+        //         console.log(doc)
         //     })
         // })
         // .catch( err => console.log(err))
 
   
-        // Image.deleteMany({"location.section": "get-paint-kit"})
+        // Image.deleteMany({"location.page": "gallery"})
         // .then(result => console.log(result))
         // .catch(err => console.log(err))
 
@@ -94,7 +94,7 @@ mongoose
         //     bcrypt.hash(password, 12)
         //     .then(hashedPw => {
         //         return User.create({
-        //             userName: userName,
+        //             userName: username,
         //             password: hashedPw,
         //             role: role
         //         })
@@ -107,6 +107,8 @@ mongoose
         //     });
         // }
         // createUser();
+
+
 
 
         app.listen(port, function(err){

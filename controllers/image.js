@@ -73,6 +73,8 @@ exports.uploadImage = async (req, res) => {
       "$set": {"path": `https://drive.google.com/uc?id=${newId}`, "googleId": newId}
     })
     console.log(`Uploaded the following document: ${doc}`)
+    console.log("new id: " + newId)
+    console.log("Id of image being deleted: " + doc.googleId)
     await deleteFile(doc.googleId)
     res.status(200).json()
   } 
@@ -84,18 +86,17 @@ exports.uploadImage = async (req, res) => {
 //Uploads one or more images to google drive and creates document in mongoDB for each image
 exports.uploadGalleryImages = async (req, res) => {
   const images = req.files;
-  index = 1;
+  console.log(images)
 
   try {
-    docsCount = await Image.countDocuments({"location.page": "gallery"});
+    docsCount = await Image.countDocuments({"location.section": images[0].originalname});
     let order = docsCount + 1
-    console.log(order)
     images.forEach( async (image) => {
       const id = await uploadFile(image)
       await Image.create({
         location: {
           page: "gallery",
-          section: "grid"
+          section: image.originalname
         },
         type: {
           name: "image",
@@ -116,14 +117,16 @@ exports.uploadGalleryImages = async (req, res) => {
     console.log(err)
   }
 
-  // use for uploading many images to google drive and database(customize Image.create() method)
+  // uploads many images to google drive and creates corresponding document in database
+  // update Image.create function with desired "page" and "section" values
+  // let index = 1;
   // images.forEach(async (image) => {
   //   try {
   //     const id = await uploadFile(image)
   //     await Image.create({
   //       location: {
-  //         page: "home",
-  //         section: "content"
+  //         page: "gallery",
+  //         section: "adult-parties"
   //       },
   //       type: {
   //         name: "image"
@@ -140,6 +143,8 @@ exports.uploadGalleryImages = async (req, res) => {
   // })
 
 }
+
+
 
 //deletes one or more selected images from google drive and deletes corresponding document from database
 exports.deleteGalleryImages = (req, res) => {
@@ -167,4 +172,3 @@ exports.deleteGalleryImages = (req, res) => {
     }
   })
 }
-
